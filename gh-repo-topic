@@ -1,0 +1,48 @@
+#!/bin/bash
+# List and add repository topics.
+#
+# Dependencies: jq
+set -e
+
+usage() {
+  echo "Usage: gh repo-topic list <repo>"
+  echo "       gh repo-topic add  <repo> <topics>..."
+}
+
+repo='{owner}/{repo}'
+
+api() {
+  gh api "repos/$repo/topics" -p mercy "$@"
+}
+
+list() {
+  api --jq '.names|join("\n")'
+}
+
+add() {
+  if [ $# -eq 0 ]; then
+    usage >&2
+    return 1
+  fi
+  IFS=","
+  api | jq --arg add_topics "$*" '{names:(.names+($add_topics|split(",")))}' | \
+    api -X PUT --input - --jq '.names|join("\n")'
+}
+
+cmd="$1"
+shift 1
+case "$cmd" in
+  list|add)
+    [ "$1" = "." ] || repo="$1"
+    shift 1
+    "$cmd" "$@"
+    ;;
+  -h|--help)
+    usage
+    exit 0
+    ;;
+  *)
+    usage >&2
+    exit 1
+    ;;
+esac
