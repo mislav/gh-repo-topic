@@ -1,7 +1,5 @@
 #!/bin/bash
 # List and add repository topics.
-#
-# Dependencies: jq
 set -e
 
 usage() {
@@ -15,6 +13,19 @@ api() {
   gh api "repos/$repo/topics" -p mercy "$@"
 }
 
+encode_topics() {
+  local topic
+  local i=0
+  while read -r topic; do
+    [ "$((i++))" -eq 0 ] || echo -n ','
+    printf '"%s"' "$topic"
+  done
+  for topic; do
+    [ "$((i++))" -eq 0 ] || echo -n ','
+    printf '"%s"' "$topic"
+  done
+}
+
 list() {
   api --jq '.names|join("\n")'
 }
@@ -24,8 +35,7 @@ add() {
     usage >&2
     return 1
   fi
-  IFS=","
-  api | jq --arg add_topics "$*" '{names:(.names+($add_topics|split(",")))}' | \
+  printf '{"names":[%s]}' "$(list | encode_topics "$@")" | \
     api -X PUT --input - --jq '.names|join("\n")'
 }
 
