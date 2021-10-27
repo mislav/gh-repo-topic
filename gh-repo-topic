@@ -3,8 +3,8 @@
 set -e
 
 usage() {
-  echo "Usage: gh repo-topic list <repo>"
-  echo "       gh repo-topic add  <repo> <topics>..."
+  echo "Usage: gh repo-topic list [<repo>]"
+  echo "       gh repo-topic add  [<repo>] <topics>..."
 }
 
 repo='{owner}/{repo}'
@@ -40,11 +40,16 @@ add() {
 }
 
 cmd="$1"
-shift 1
+[ $# -eq 0 ] || shift 1
+
 case "$cmd" in
   list|add)
-    [ "$1" = "." ] || repo="$1"
-    shift 1
+    if [ "$1" = "." ]; then
+      shift 1
+    elif [[ $1 == */* ]]; then
+      repo="$1"
+      shift 1
+    fi
     "$cmd" "$@"
     ;;
   -h|--help)
