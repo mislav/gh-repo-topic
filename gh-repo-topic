@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # List and add repository topics.
 set -e
 
