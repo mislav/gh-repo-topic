@@ -35,7 +35,7 @@ add() {
     usage >&2
     return 1
   fi
-  printf '{"names":[%s]}' "$(list | encode_topics "$@")" | \
+  printf '{"names":[%s]}' "$(list | awk NF | encode_topics "$@")" | \
     api -X PUT --input - --jq '.names|join("\n")'
 }
 
