@@ -17,6 +17,7 @@ encode_topics() {
   local topic
   local i=0
   while read -r topic; do
+    [ -n "$topic" ] || continue
     [ "$((i++))" -eq 0 ] || echo -n ','
     printf '"%s"' "$topic"
   done
