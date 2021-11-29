@@ -17,6 +17,7 @@ encode_topics() {
   local topic
   local i=0
   while read -r topic; do
+    [ -n "$topic" ] || continue
     [ "$((i++))" -eq 0 ] || echo -n ','
     printf '"%s"' "$topic"
   done
@@ -35,7 +36,7 @@ add() {
     usage >&2
     return 1
   fi
-  printf '{"names":[%s]}' "$(list | awk NF | encode_topics "$@")" | \
+  printf '{"names":[%s]}' "$(list | encode_topics "$@")" | \
     api -X PUT --input - --jq '.names|join("\n")'
 }
 
