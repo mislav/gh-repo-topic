@@ -1,5 +1,7 @@
 # gh repo-topic
 
+**Note:** this functionality is now available in GitHub CLI core. See [`gh repo edit`](https://cli.github.com/manual/gh_repo_edit)
+
 List and add topics to a GitHub repository.
 
 ```
